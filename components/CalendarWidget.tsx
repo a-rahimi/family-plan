@@ -22,15 +22,20 @@ const fetcher = async (url: string) => {
   return (await response.json()) as CalendarResponse;
 };
 
+const LOS_ANGELES_TIMEZONE = "America/Los_Angeles";
+const TIMEZONE_PARAM_KEYS = ["ctz", "timezone", "tz"];
+
 const dayFormatter = new Intl.DateTimeFormat(undefined, {
   weekday: "short",
   month: "short",
   day: "numeric",
+  timeZone: LOS_ANGELES_TIMEZONE,
 });
 
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
   hour: "numeric",
   minute: "2-digit",
+  timeZone: LOS_ANGELES_TIMEZONE,
 });
 
 const formatTimeRange = (event: CalendarAgendaEvent) => {
@@ -45,13 +50,36 @@ const formatTimeRange = (event: CalendarAgendaEvent) => {
 
 const buildApiUrl = (maxEvents: number) => `/api/calendar?maxResults=${maxEvents}`;
 
+const parseCalendarUrl = (rawUrl: string) => {
+  try {
+    return new URL(rawUrl);
+  } catch {
+    const fallbackBase =
+      typeof window !== "undefined" && window.location?.origin
+        ? window.location.origin
+        : "https://calendar.google.com";
+    return new URL(rawUrl, fallbackBase);
+  }
+};
+
+const enforceTimezoneParam = (url: URL) => {
+  const existingKeys = Array.from(url.searchParams.keys());
+  existingKeys.forEach((key) => {
+    if (TIMEZONE_PARAM_KEYS.includes(key.toLowerCase())) {
+      url.searchParams.delete(key);
+    }
+  });
+  url.searchParams.set("ctz", LOS_ANGELES_TIMEZONE);
+};
+
 const ensureWeeklyIframeSrc = (src?: string) => {
   if (!src) return undefined;
   try {
-    const url = new URL(src);
+    const url = parseCalendarUrl(src);
     if (!url.searchParams.get("mode")) {
       url.searchParams.set("mode", "WEEK");
     }
+    enforceTimezoneParam(url);
     return url.toString();
   } catch {
     return src;

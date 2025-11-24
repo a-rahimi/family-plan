@@ -9,8 +9,7 @@ import { prisma } from "@/lib/prisma";
 const TODOS_DIR = path.join(process.cwd(), "content", "todos");
 
 const frontmatterSchema = z.object({
-  member: z.string(),
-  name: z.string().optional(),
+  name: z.string(),
   color: z.string().optional(),
   timezone: z.string().optional(),
 });
@@ -142,11 +141,11 @@ const assignSourceKeys = (todos: (ParsedMarkdownTodo & { metadata: Record<string
   const seenKeys = new Set<string>();
 
   todos.forEach((todo) => {
-    const candidate = todo.metadata.id ?? slugify(todo.title);
-    let key = candidate;
+    const base = slugify(todo.title);
+    let key = base;
     let counter = 1;
     while (seenKeys.has(key)) {
-      key = `${candidate}-${counter}`;
+      key = `${base}-${counter}`;
       counter += 1;
     }
     seenKeys.add(key);
@@ -233,7 +232,7 @@ export const parseMarkdownFile = async (filePath: string): Promise<ParsedMarkdow
   const fileChecksum = checksum(content);
   const parsed = matter(content);
   const data = frontmatterSchema.parse(parsed.data);
-  const slug = data.member ?? slugify(path.basename(filePath, ".md"));
+  const slug = slugify(data.name);
 
   return {
     path: path.relative(process.cwd(), filePath),

@@ -66,12 +66,11 @@ Next.js 14 + SQLite workspace that combines a shared Google Calendar agenda with
 
 ## Markdown Workflow
 
-- Files live at `content/todos/<member>.md`.
+- Files live at `content/todos/<member-slug>.md` (slug is derived from the display name).
 - Each file starts with YAML front-matter:
 
   ```yaml
   ---
-  member: alex
   name: Alex
   color: "#2563eb"
   timezone: America/Los_Angeles
@@ -82,7 +81,6 @@ Next.js 14 + SQLite workspace that combines a shared Google Calendar agenda with
 
   ```
   - [ ] Pack lunch
-    id: pack-lunch
     recurring: weekday@07:15
     time: 07:15
     notes: Sandwich + fruit

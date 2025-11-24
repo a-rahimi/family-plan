@@ -104,7 +104,6 @@ export const TodoColumn = ({ member }: Props) => {
       <header className="border-b border-slate-100 pb-3">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Member</p>
             <h3
               className="text-2xl font-semibold text-slate-900"
               style={{ color: member.colorHex ?? undefined }}

@@ -19,9 +19,9 @@ export default async function Home() {
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-slate-900">Per-member todos</h2>
+            <h2 className="text-xl font-semibold text-slate-900">TODOs</h2>
             <Link href="/admin" className="text-sm font-semibold text-slate-500 hover:text-slate-900">
-              Manage markdown →
+              Edit TODOs →
             </Link>
           </div>
           {members.length === 0 ? (

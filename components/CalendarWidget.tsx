@@ -75,11 +75,7 @@ export const CalendarWidget = ({
 
   return (
     <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Calendar</p>
-          <h2 className="text-2xl font-semibold text-slate-900">Upcoming events</h2>
-        </div>
+      <header className="flex items-center justify-end">
         <button
           type="button"
           onClick={() => mutate()}

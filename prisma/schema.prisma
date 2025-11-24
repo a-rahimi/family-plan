@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TodoStatus {
+  PENDING
+  DONE
+}
+
+enum RecurrenceFrequency {
+  ONCE
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+model FamilyMember {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  colorHex    String?
+  avatarUrl   String?
+  timezone    String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  todos       Todo[]
+  recurrences RecurringRule[]
+}
+
+model MarkdownSource {
+  id           String           @id @default(cuid())
+  path         String           @unique
+  checksum     String
+  lastSyncedAt DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  todos        Todo[]
+  recurrences  RecurringRule[]
+}
+
+model Todo {
+  id                      String           @id @default(cuid())
+  memberId                String
+  member                  FamilyMember     @relation(fields: [memberId], references: [id])
+  title                   String
+  notes                   String?
+  category                String?
+  tags                    Json?
+  status                  TodoStatus       @default(PENDING)
+  scheduledDate           DateTime?
+  timeOfDay               String?
+  timezone                String?
+  sourceId                String?
+  source                  MarkdownSource?  @relation(fields: [sourceId], references: [id])
+  sourceKey               String?
+  sourceLine              Int?
+  metadata                Json?
+  recurrenceRuleId        String?
+  recurrenceRule          RecurringRule?   @relation(fields: [recurrenceRuleId], references: [id])
+  wasGeneratedFromRecurring Boolean        @default(false)
+  completedAt             DateTime?
+  clearedAt               DateTime?
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+
+  @@index([memberId, status])
+  @@index([scheduledDate])
+  @@index([recurrenceRuleId])
+  @@index([sourceId])
+}
+
+model RecurringRule {
+  id             String          @id @default(cuid())
+  memberId       String
+  member         FamilyMember    @relation(fields: [memberId], references: [id])
+  title          String
+  notes          String?
+  frequency      RecurrenceFrequency
+  interval       Int             @default(1)
+  daysOfWeek     Json?
+  dayOfMonth     Int?
+  timeOfDay      String?
+  timezone       String          @default("UTC")
+  startsOn       DateTime?
+  endsOn         DateTime?
+  sourceId       String?
+  source         MarkdownSource? @relation(fields: [sourceId], references: [id])
+  sourceKey      String?
+  metadata       Json?
+  lastOccurrence DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  todos          Todo[]
+
+  @@index([memberId])
+  @@index([frequency])
+}

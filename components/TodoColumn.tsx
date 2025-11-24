@@ -23,9 +23,9 @@ const fetcher = async (url: string): Promise<TodoApiResponse> => {
 };
 
 const filterConfig: { id: Filter; label: string }[] = [
+  { id: "all", label: "All" },
   { id: "active", label: "Active" },
   { id: "done", label: "Done" },
-  { id: "all", label: "All" },
 ];
 
 const formatTime = (value?: string | null) => {
@@ -55,7 +55,7 @@ const frequencyLabel = (todo: TodoResponse) => {
 };
 
 export const TodoColumn = ({ member }: Props) => {
-  const [filter, setFilter] = useState<Filter>("active");
+  const [filter, setFilter] = useState<Filter>("all");
   const [clearing, setClearing] = useState(false);
   const { data, error, isLoading, mutate } = useSWR<TodoApiResponse>(
     `/api/todos?member=${member.slug}`,
@@ -186,7 +186,15 @@ export const TodoColumn = ({ member }: Props) => {
                     />
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-base font-semibold text-slate-900">{todo.title}</p>
+                        <p
+                          className={`text-base font-semibold ${
+                            isDone
+                              ? "text-slate-500 line-through decoration-slate-400"
+                              : "text-slate-900"
+                          }`}
+                        >
+                          {todo.title}
+                        </p>
                         <span className="text-xs font-semibold text-slate-500">
                           {formatTime(todo.timeOfDay)}
                         </span>

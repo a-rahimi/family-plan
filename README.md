@@ -105,12 +105,12 @@ Next.js 14 + SQLite workspace that combines a shared Google Calendar agenda with
 
 Multi-stage Dockerfile (`node:20-alpine`) and compose file included.
 
-### Remote deploy (macbookpro.lan)
+### Remote deploy (server.local)
 
 1. Point your Docker CLI to the remote daemon:
 
    ```bash
-   export DOCKER_HOST=ssh://ali@macbookpro.lan
+   export DOCKER_HOST=ssh://ali@server.local
    ```
 
 2. Build the image from the repo root:
@@ -128,7 +128,7 @@ Multi-stage Dockerfile (`node:20-alpine`) and compose file included.
 4. Start the new container over SSH (binds todos + SQLite volumes):
 
    ```bash
-   ssh ali@macbookpro.lan <<'EOF'
+   ssh ali@server.local <<'EOF'
    docker run -d \
      --name family-plan \
      --env-file /opt/family-plan/.env \
@@ -148,8 +148,7 @@ Multi-stage Dockerfile (`node:20-alpine`) and compose file included.
 6. Refresh Prisma schema (when migrations change):
 
    ```bash
-   docker exec family-plan \
-     npx prisma migrate deploy --schema=/app/prisma/schema.prisma
+   docker exec family-plan npx prisma migrate deploy --schema=/app/prisma/schema.prisma
    ```
 
 ### Local compose (optional)
